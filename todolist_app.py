@@ -37,6 +37,7 @@ class ToDoList:
         self.unsaved_tasks.clear() # after saving they are no longer needed as a copy
 
     def load_tasks(self, filename):
+        self.tasksJSON.clear() # avoid duplicates
         if len(self.unsaved_tasks) > 0: # we've added a task but not saved it yet
             print(f'You have {len(self.unsaved_tasks)} new tasks that are not saved.')
             print(f'It\'s recommended to save.')
@@ -57,9 +58,10 @@ class ToDoList:
                 task_data = json.loads(line)  # Parse JSON from line
                 task = Task(**task_data)  # Create a Task object from the JSON data
                 self.tasksJSON.append(task)  # Append the task to self.tasks
+            
 
         
-    def update_task_completed_status(self, filename, task_id):
+    def mark_task_as_completed(self, filename, task_id):
         found = False
         try:
             with open(filename, 'r') as f:
@@ -71,6 +73,8 @@ class ToDoList:
                     self.tasksJSON.append(task)
                 if not found:
                     print("Error: Task not found with the provided ID.")
+                    time.sleep(1)
+                    return
         except FileNotFoundError:
             print(f"Error: File '{filename}' not found.")
         except Exception as e:
@@ -81,24 +85,38 @@ class ToDoList:
             for task in self.tasksJSON:
                 json.dump(task, f)
                 f.write('\n')  # Add newline character after each task
-        print("Task completed status updated successfully.")
+        print("Task completed status updated to true successfully.")
         time.sleep(2)
-        self.tasksJSON.clear()
+        
 
     def delete_specific_task(self, filename, task_id):
-        self.load_tasks(filename)
-        for task in self.tasksJSON:
-            if task_id == task.id:
-                self.tasksJSON.remove(task)
-                break
-        #saving the new version
+        found = False
+        with open(filename, 'r') as f:
+            for line in f.readlines():
+                task_data = json.loads(line.rstrip())  # Parse JSON from line
+                if task_data.get('id') == task_id:
+                    found = True
+                    continue
+                # Convert Task parsed object to dictionary
+                task_dict = {
+                    'id': task_data.get('id'),
+                    'title': task_data.get('title'),
+                    'content': task_data.get('content'),
+                    'completed': task_data.get('completed')
+                }
+                self.tasksJSON.append(task_dict)  # Append the task to self.tasks
+        if not found:
+                    print("Error: Task not found with the provided ID.")
+                    time.sleep(1)
+                    return
+        # Save the updated tasks to the file
         with open(filename, 'w') as f:
             for task in self.tasksJSON:
                 json.dump(task, f)
                 f.write('\n')  # Add newline character after each task
         print("Deleted finished successfully")
         time.sleep(2)
-        self.tasksJSON.clear()        
+        self.tasksJSON.clear()       
                 
 
 def main():
@@ -131,16 +149,17 @@ def main():
             task = Task(key, name, contentList)
             todo_list.add_task(task)
         elif choice == '2': # VIEW
+            time.sleep(1)
             try:
                 # get the size of file
                 file_size = os.path.getsize('./tasks.json')
         
                 # if file size is 0, it is empty
                 if (file_size == 0):
-                    print("File is empty")
+                    print("There are no registered tasks in the app")
                     time.sleep(1)
-                else:
-                    todo_list.load_tasks(fileName)
+                
+                todo_list.load_tasks(fileName)
                     
         
             # if file does not exist, then exception occurs
@@ -148,6 +167,7 @@ def main():
                 print("File NOT found")
                 continue
             print("All Tasks:")
+            time.sleep(1.5)
             for index, task in enumerate(todo_list.tasksJSON, start=1):
                 print(f'\tid: {task.id}')
                 print(f"\t{index}. {task.title}")
@@ -160,7 +180,7 @@ def main():
             print("---------------------------------")
         elif choice == '3': # Mark task as completed
             id = input("Please copy the id of the task in order to complete: ")
-            todo_list.update_task_completed_status(fileName, id)
+            todo_list.mark_task_as_completed(fileName, id)
         elif choice == '4': # Delete task by id
             id = input("Please copy the id of the task in order to delete: ")
             todo_list.delete_specific_task(fileName, id)
