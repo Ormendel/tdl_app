@@ -60,7 +60,19 @@ class ToDoList:
                 self.tasksJSON.append(task)  # Append the task to self.tasks
             
 
-        
+    def display_tasks(self):
+        print("All Tasks:")
+        time.sleep(1.5)
+        for index, task in enumerate(self.tasksJSON, start=1):
+            print(f'\tid: {task.id}')
+            print(f"\t{index}. {task.title}")
+            for section in task.content:
+                print(f'\t\t* {section}')
+            if task.completed:
+                print(f'\t-- TASK IS COMPLETED --')
+        self.tasksJSON.clear() # clear tasksJSON in order to avoid duplicates
+        print("---------------------------------")
+        print("---------------------------------")
     def mark_task_as_completed(self, filename, task_id):
         found = False
         try:
@@ -106,9 +118,9 @@ class ToDoList:
                 }
                 self.tasksJSON.append(task_dict)  # Append the task to self.tasks
         if not found:
-                    print("Error: Task not found with the provided ID.")
-                    time.sleep(1)
-                    return
+            print("Error: Task not found with the provided ID.")
+            time.sleep(1)
+            return
         # Save the updated tasks to the file
         with open(filename, 'w') as f:
             for task in self.tasksJSON:
@@ -159,25 +171,12 @@ def main():
                     print("There are no registered tasks in the app")
                     time.sleep(1)
                 
-                todo_list.load_tasks(fileName)
-                    
-        
+                todo_list.load_tasks(fileName) 
             # if file does not exist, then exception occurs
             except FileNotFoundError as e:
                 print("File NOT found")
                 continue
-            print("All Tasks:")
-            time.sleep(1.5)
-            for index, task in enumerate(todo_list.tasksJSON, start=1):
-                print(f'\tid: {task.id}')
-                print(f"\t{index}. {task.title}")
-                for section in task.content:
-                    print(f'\t\t* {section}')
-                if task.completed:
-                    print(f'\t-- TASK IS COMPLETED --')
-            todo_list.tasksJSON.clear() # clear tasksJSON in order to avoid duplicates
-            print("---------------------------------")
-            print("---------------------------------")
+            todo_list.display_tasks() # display tasks
         elif choice == '3': # Mark task as completed
             id = input("Please copy the id of the task in order to complete: ")
             todo_list.mark_task_as_completed(fileName, id)
