@@ -13,3 +13,9 @@ Advanced python app that simulates how to-do-list applications work
 
 ![project_logo](https://cdn.thewirecutter.com/wp-content/media/2023/12/todoapps-2048px-07030-2x1-1.jpg?auto=webp&quality=75&crop=2:1&width=1024)
 
+Watch demo (edited by Coolcut):
+
+
+
+https://github.com/Ormendel/tdl_app/assets/57266329/12310d27-90b0-48e1-86fb-402425fa4c1b
+
