@@ -135,7 +135,10 @@ def main():
     todo_list = ToDoList()
     fileName = 'tasks.json'
 
+    print("WELCOME TO OR'S TDL APP")
     while True:
+        print('Select 1-6 from the following')
+        print('-------------------------------')
         print("\t1. Add a new task") # completed
         print("\t2. View all tasks") # completed
         print("\t3. Mark task as completed") # completed
